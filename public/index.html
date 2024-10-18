@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Mahasiswa</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .table-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Data Mahasiswa</h1>
+
+        <!-- Form Input Mahasiswa -->
+        <form id="mahasiswaForm">
+            <div class="form-group">
+                <label for="npm">NPM:</label>
+                <input type="text" class="form-control" id="npm" required>
+            </div>
+            <div class="form-group">
+                <label for="nama">Nama:</label>
+                <input type="text" class="form-control" id="nama" required>
+            </div>
+            <div class="form-group">
+                <label for="no">Nomor:</label>
+                <input type="text" class="form-control" id="no" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Tambah Mahasiswa</button>
+        </form>
+
+        <!-- Tabel Data Mahasiswa -->
+        <div class="table-container">
+            <h2>Daftar Mahasiswa</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>NPM</th>
+                        <th>Nama</th>
+                        <th>Nomor</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="mahasiswaTableBody">
+                    <!-- Data mahasiswa akan ditampilkan di sini -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        const apiUrl = 'http://localhost:3000/api/mahasiswa';
+    
+        // Function to fetch and display student data
+        function fetchMahasiswa() {
+            $.get(apiUrl, (data) => {
+                const mahasiswaTableBody = $('#mahasiswaTableBody');
+                mahasiswaTableBody.empty();
+                console.log(data); // Debugging line to check API response
+                if (Array.isArray(data)) {
+                    data.forEach(mahasiswa => {
+                        mahasiswaTableBody.append(`
+                            <tr>
+                                <td>${mahasiswa.npm}</td>
+                                <td>${mahasiswa.nama}</td>
+                                <td>${mahasiswa.no}</td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteMahasiswa('${mahasiswa.npm}')">Hapus</button>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                } else {
+                    alert("Data yang diterima bukan array");
+                }
+            }).fail((xhr) => {
+                alert(`Error fetching data: ${xhr.responseText}`);
+            });
+        }
+    
+        // Function to add student data
+        $('#mahasiswaForm').on('submit', function(e) {
+            e.preventDefault();
+            const npm = $('#npm').val();
+            const nama = $('#nama').val();
+            const no = $('#no').val();
+    
+            $.ajax({
+                url: apiUrl,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ npm, nama, no }),
+                success: (response) => {
+                    alert(response.message);
+                    fetchMahasiswa();
+                    $('#mahasiswaForm')[0].reset();
+                },
+                error: (xhr) => {
+                    alert(`Error: ${xhr.responseJSON.message}`);
+                }
+            });
+        });
+    
+        // Function to delete student data
+        function deleteMahasiswa(npm) {
+            $.ajax({
+                url: `${apiUrl}/${npm}`,
+                type: 'DELETE',
+                success: (response) => {
+                    alert(response.message);
+                    fetchMahasiswa();
+                },
+                error: (xhr) => {
+                    alert(`Error: ${xhr.responseJSON.message}`);
+                }
+            });
+        }
+    
+        // Fetch student data when the page loads
+        $(document).ready(fetchMahasiswa);
+    </script>
+    </body>
+</html>
