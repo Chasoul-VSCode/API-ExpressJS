@@ -26,7 +26,7 @@ app.post('/api/mahasiswa', (req, res) => {
 app.delete('/api/mahasiswa/:npm', (req, res) => {
     const { npm } = req.params;
     mahasiswa = mahasiswa.filter(m => m.npm !== npm);
-    res.json({ message: 'Mahasiswa berhasil dihapus' });
+    res.json({ message: 'Mahasiswa dihapus' });
 });
 
 // Start the server
