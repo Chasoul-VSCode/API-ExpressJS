@@ -20,7 +20,7 @@ app.get('/api/mahasiswa', (req, res) => {
 app.post('/api/mahasiswa', (req, res) => {
     const { npm, nama, no } = req.body;
     mahasiswa.push({ npm, nama, no });
-    res.json({ message: 'Mahasiswa berhasil ditambahkan' });
+    res.json({ message: 'Mahasiswa berhasil ditambah' });
 });
 
 app.delete('/api/mahasiswa/:npm', (req, res) => {
